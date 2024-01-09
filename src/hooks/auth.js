@@ -1,7 +1,7 @@
-import axios from "@/libs/axios"
 import { useRouter } from "next/navigation"
 import { useEffect, useState } from "react"
 import useSWR from "swr"
+import axios from "@/libs/axios"
 
 export const useAuth = ({ middleware } = {}) => {
   const router = useRouter()
@@ -17,11 +17,10 @@ export const useAuth = ({ middleware } = {}) => {
   } = useSWR("/api/user", () =>
     axios
       .get("/api/user")
-      .then((response) => response.data.data)
+      .then((response) => response.data)
       .catch((error) => {
-        if (error.response.status !== 409) {
-          throw error
-        }
+        if (error.response.status !== 409) throw error
+        router.push("/dashboard")
       })
   )
 
@@ -30,9 +29,8 @@ export const useAuth = ({ middleware } = {}) => {
 
   // Login
   const login = async ({ setErrors, ...props }) => {
-    setErrors([])
-
     await csrf()
+    setErrors([])
 
     axios
       .post("/login", props)
@@ -55,9 +53,9 @@ export const useAuth = ({ middleware } = {}) => {
       setIsLoading(false)
     }
 
-    if (middleware == "guest" && user) router.push("/")
-    if (middleware == "auth" && error) router.push("/login")
-  })
+    if (middleware === "guest" && user) router.push("/")
+    if (middleware === "auth" && error) router.push("/dashboard")
+  }, [user, error])
 
   return { user, csrf, isLoading, login, logout }
 }

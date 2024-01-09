@@ -1,4 +1,5 @@
 "use client"
+import { useAuth } from "@/hooks/auth"
 import LoginForm from "../(auth)/LoginForm"
 import { Typewriter } from "react-simple-typewriter"
 
